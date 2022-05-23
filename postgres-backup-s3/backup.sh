@@ -95,7 +95,7 @@ else
 
     echo "Uploading dump to $S3_BUCKET"
 
-    cat dump.sql.gz.gpg | aws $AWS_ARGS s3 cp - "s3://${S3_BUCKET}${S3_PREFIX}${DB}_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz" || exit 2
+    cat dump.sql.gz.gpg | aws $AWS_ARGS s3 cp - "s3://${S3_BUCKET}${S3_PREFIX}${DB}_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg" || exit 2
 
     echo "SQL backup uploaded successfully"
 
