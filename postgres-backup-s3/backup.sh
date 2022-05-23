@@ -43,6 +43,12 @@ if [ "${POSTGRES_PASSWORD}" = "**None**" ]; then
   exit 1
 fi
 
+if [ "${GPG_PASSWORD}" = "**None**" ]; then
+  echo "You need to set the GPG_PASSWORD environment variable."
+  exit 1
+fi
+
+
 if [ "${S3_ENDPOINT}" == "**None**" ]; then
   AWS_ARGS=""
 else
@@ -67,7 +73,7 @@ fi
 if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
   echo "Creating dump of all databases from ${POSTGRES_HOST}..."
 
-  pg_dumpall -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER | gzip > dump.sql.gz
+  pg_dumpall -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER | gzip | gpg -R $GPG_PASSWORD -e -o dump.sql.gz.gpg
 
   echo "Uploading dump to $S3_BUCKET"
 
