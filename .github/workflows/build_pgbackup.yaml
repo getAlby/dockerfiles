@@ -1,0 +1,24 @@
+name: Build pgbackup
+on:
+  push:
+    branches:
+      - master
+    tags:        
+      - '*'
+jobs:
+  build:
+    env:
+      REGISTRY: ghcr.io
+      IMAGENAME: postgres-backup-s3
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Check out code
+    - name: Docker build
+      uses: mr-smithers-excellent/docker-build-push@v5
+      with:
+        image: ${{ env.IMAGENAME }}
+        registry: ${{ env.REGISTRY }}
+        directory: postgres-backup-s3
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
