@@ -9,6 +9,9 @@ apk update
 # install pg_dump
 apk add postgresql-client
 
+# install gpg
+apk add gnupg
+
 # install s3 tools
 apk add aws-cli
 
