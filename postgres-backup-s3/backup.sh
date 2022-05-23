@@ -73,7 +73,7 @@ fi
 if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
   echo "Creating dump of all databases from ${POSTGRES_HOST}..."
 
-  pg_dumpall -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER | gzip | gpg -R $GPG_PASSWORD -e -o dump.sql.gz.gpg
+  pg_dumpall -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER | gzip | gpg -c --batch --passphrase $GPG_PASSWORD -o dump.sql.gz.gpg
 
   echo "Uploading dump to $S3_BUCKET"
 
@@ -91,7 +91,7 @@ else
 
     echo "Creating dump of ${DB} database from ${POSTGRES_HOST}..."
 
-    pg_dump $POSTGRES_HOST_OPTS $DB | gzip | gpg -R $GPG_PASSWORD -e -o dump.sql.gz.gpg
+    pg_dump $POSTGRES_HOST_OPTS $DB | gzip | gpg -c --batch --passphrase $GPG_PASSWORD -o dump.sql.gz.gpg
 
     echo "Uploading dump to $S3_BUCKET"
 
