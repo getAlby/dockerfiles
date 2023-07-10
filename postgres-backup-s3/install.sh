@@ -7,7 +7,7 @@ set -eo pipefail
 apk update
 
 # install pg_dump
-apk add postgresql-client
+apk add postgresql15-client
 
 # install gpg
 apk add gnupg
