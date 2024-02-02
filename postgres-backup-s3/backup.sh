@@ -107,5 +107,5 @@ else
 fi
 
 if [ "${SENTRY_CRON_ENDPOINT}" != "**None**" ]; then
-  curl "${ENTRY_CRON_ENDPOINT}?status=ok"
+  curl "${SENTRY_CRON_ENDPOINT}?status=ok"
 fi
