@@ -1,0 +1,26 @@
+name: Build s3-lastmodified-checker
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:        
+      - '*'
+jobs:
+  build:
+    env:
+      REGISTRY: ghcr.io
+      IMAGENAME: s3-lastmodified-checker
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Check out code
+    - name: Docker build
+      uses: mr-smithers-excellent/docker-build-push@v5
+      with:
+        image: ${{ env.IMAGENAME }}
+        registry: ${{ env.REGISTRY }}
+        directory: s3-lastmodified-checker
+        dockerfile: s3-lastmodified-checker/Dockerfile
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
