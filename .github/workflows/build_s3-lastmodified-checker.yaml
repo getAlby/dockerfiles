@@ -2,6 +2,8 @@ name: Build s3-lastmodified-checker
 on:
   workflow_dispatch:
   push:
+    paths:
+      - 's3-lastmodified-checker**'
     branches:
       - master
     tags:        
