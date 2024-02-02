@@ -57,3 +57,7 @@ An Endpoint is the URL of the entry point for an AWS web service or S3 Compitabl
 You can specify an alternate endpoint by setting `S3_ENDPOINT` environment variable like `protocol://endpoint`
 
 **Note:** S3 Compitable Storage Provider requires `S3_ENDPOINT` environment variable
+
+### SENTRY CRON monitors
+
+You can set `SENTRY_CRON_ENDPOINT` and it will call this endpoint with `?status=in_progress` in beginning and `?status=ok` in the end on success

@@ -69,6 +69,9 @@ else
   S3_PREFIX="/${S3_PREFIX}/"  
 fi
 
+if [ "${SENTRY_CRON_ENDPOINT}" != "**None**" ]; then
+  curl "${ENTRY_CRON_ENDPOINT}?status=in_progress"
+fi
 
 if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
   echo "Creating dump of all databases from ${POSTGRES_HOST}..."
@@ -103,3 +106,6 @@ else
   done
 fi
 
+if [ "${SENTRY_CRON_ENDPOINT}" != "**None**" ]; then
+  curl "${ENTRY_CRON_ENDPOINT}?status=ok"
+fi
