@@ -70,7 +70,7 @@ else
 fi
 
 if [ "${SENTRY_CRON_ENDPOINT}" != "**None**" ]; then
-  curl "${ENTRY_CRON_ENDPOINT}?status=in_progress"
+  curl "${SENTRY_CRON_ENDPOINT}?status=in_progress"
 fi
 
 if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
