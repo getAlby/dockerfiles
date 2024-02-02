@@ -1,10 +1,6 @@
 FROM zulhfreelancer/aws-cli-v2-on-ubuntu
 
-RUN curl --version
-
-#RUN apt-get update && apt-get install -y curl
-
-COPY run.sh /opt/s3-lastmodified-checker/run.sh
+ADD run.sh /opt/s3-lastmodified-checker/run.sh
 
 WORKDIR /s3-lastmodified-checker
 
