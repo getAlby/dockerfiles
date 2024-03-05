@@ -1,4 +1,4 @@
-name: Build s3-lastmodified-checker
+name: Build max-htlc-fee-rate
 on:
   workflow_dispatch:
   push:
@@ -22,7 +22,7 @@ jobs:
       with:
         image: ${{ env.IMAGENAME }}
         registry: ${{ env.REGISTRY }}
-        directory: s3-lastmodified-checker
-        dockerfile: s3-lastmodified-checker/Dockerfile
+        directory: max-htlc-fee-rate
+        dockerfile: max-htlc-fee-rate/Dockerfile
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
