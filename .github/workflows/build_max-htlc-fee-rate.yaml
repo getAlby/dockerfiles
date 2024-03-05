@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'max-htlc-fee-rate**'
+      - '.github/workflows/build_max-htlc-fee-rate.yaml'
     branches:
       - master
     tags:        
