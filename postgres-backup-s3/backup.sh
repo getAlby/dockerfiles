@@ -76,15 +76,15 @@ fi
 if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
   echo "Creating dump of all databases from ${POSTGRES_HOST}..."
 
-  pg_dumpall -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER | gzip | gpg -c --batch --passphrase $GPG_PASSWORD -o dump.sql.gz.gpg
+  pg_dumpall -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER | gzip | gpg -c --batch --passphrase $GPG_PASSWORD -o ${DUMP_PATH}dump.sql.gz.gpg
 
   echo "Uploading dump to $S3_BUCKET"
 
-  cat dump.sql.gz.gp | aws $AWS_ARGS s3 cp - "s3://${S3_BUCKET}${S3_PREFIX}all_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg" || exit 2
+  cat ${DUMP_PATH}dump.sql.gz.gp | aws $AWS_ARGS s3 cp - "s3://${S3_BUCKET}${S3_PREFIX}all_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg" || exit 2
 
   echo "SQL backup uploaded successfully"
 
-  rm -rf dump.sql.gz
+  rm -rf ${DUMP_PATH}dump.sql.gz
 else
   OIFS="$IFS"
   IFS=','
@@ -94,15 +94,15 @@ else
 
     echo "Creating dump of ${DB} database from ${POSTGRES_HOST}..."
 
-    pg_dump $POSTGRES_HOST_OPTS $DB | gzip | gpg -c --batch --passphrase $GPG_PASSWORD -o dump.sql.gz.gpg
+    pg_dump $POSTGRES_HOST_OPTS $DB | gzip | gpg -c --batch --passphrase $GPG_PASSWORD -o ${DUMP_PATH}dump.sql.gz.gpg
 
     echo "Uploading dump to $S3_BUCKET"
 
-    cat dump.sql.gz.gpg | aws $AWS_ARGS s3 cp - "s3://${S3_BUCKET}${S3_PREFIX}${DB}_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg" || exit 2
+    cat ${DUMP_PATH}dump.sql.gz.gpg | aws $AWS_ARGS s3 cp - "s3://${S3_BUCKET}${S3_PREFIX}${DB}_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg" || exit 2
 
     echo "SQL backup uploaded successfully"
 
-    rm -rf dump.sql.gz
+    rm -rf ${DUMP_PATH}dump.sql.gz
   done
 fi
 
