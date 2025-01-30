@@ -20,6 +20,7 @@ ENV S3_ENDPOINT **None**
 ENV S3_S3V4 no
 ENV SCHEDULE **None**
 ENV SENTRY_CRON_ENDPOINT **None**
+ENV DUMP_PATH ''
 
 ADD run.sh run.sh
 ADD backup.sh backup.sh
