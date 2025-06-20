@@ -1,0 +1,28 @@
+name: Build fly-psql-backup
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'fly-psql-backup**'
+    branches:
+      - master
+    tags:        
+      - '*'
+jobs:
+  build:
+    env:
+      REGISTRY: ghcr.io
+      IMAGENAME: fly-psql-backup
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Check out code
+    - name: Docker build
+      uses: mr-smithers-excellent/docker-build-push@v5
+      with:
+        image: ${{ env.IMAGENAME }}
+        registry: ${{ env.REGISTRY }}
+        directory: fly-psql-backup
+        dockerfile: fly-psql-backup/Dockerfile
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
