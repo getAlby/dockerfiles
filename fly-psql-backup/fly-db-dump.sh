@@ -19,7 +19,7 @@ dbs=$(psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -t -c \
     "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres', 'template0', 'template1') AND datname LIKE 'nwc%' ORDER BY datname;" | sed 's/^ *//' | sed '/^$/d')
 
 for db in $dbs; do
-    outfile="${BACKUP_DIR}/${db}_${DATE_SUFFIX}.sql.gz"
+    outfile="${BACKUP_DIR}/${DATE_SUFFIX}.sql.gz"
     echo "Backing up $db to $outfile"
     pg_dump -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" "$db" | gzip > "$outfile"
     echo "Done $db"
@@ -37,10 +37,11 @@ for db in $dbs; do
 
     # Upload to S3-compatible bucket (Google Cloud Storage)
     if [ -n "$S3_ACCESS_KEY_ID" ] && [ -n "$S3_SECRET_ACCESS_KEY" ] && [ -n "$S3_ENDPOINT_URL" ] && [ -n "$S3_BUCKET" ]; then
+        s3_path="s3://$S3_BUCKET/$db/${DATE_SUFFIX}.sql.gz.gpg"
         AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID" \
         AWS_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY" \
-        /usr/local/bin/s5cmd --endpoint-url "$S3_ENDPOINT_URL" cp "$gpg_outfile" "s3://$S3_BUCKET/"
-        echo "Uploaded $gpg_outfile to s3://$S3_BUCKET/"
+        /usr/local/bin/s5cmd --endpoint-url "$S3_ENDPOINT_URL" cp "$gpg_outfile" "$s3_path"
+        echo "Uploaded $gpg_outfile to $s3_path"
     else
         echo "S3 credentials or bucket info not set; skipping upload for $gpg_outfile"
     fi
