@@ -73,6 +73,9 @@ if [ "${SENTRY_CRON_ENDPOINT}" != "**None**" ]; then
   curl "${SENTRY_CRON_ENDPOINT}?status=in_progress"
 fi
 
+BACKUP_START_TIME=$(date +%s)
+echo "Starting backup at $(date -Iseconds)"
+
 if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
   echo "Creating dump of all databases from ${POSTGRES_HOST}..."
 
@@ -105,6 +108,12 @@ else
     rm -rf ${DUMP_PATH}dump.sql.gz
   done
 fi
+
+BACKUP_END_TIME=$(date +%s)
+BACKUP_DURATION=$((BACKUP_END_TIME - BACKUP_START_TIME))
+BACKUP_DURATION_FORMATTED=$(date -u -d @${BACKUP_DURATION} +"%H:%M:%S")
+echo "Backup completed at $(date -Iseconds)"
+echo "Total backup duration: ${BACKUP_DURATION_FORMATTED} (${BACKUP_DURATION} seconds)"
 
 if [ "${SENTRY_CRON_ENDPOINT}" != "**None**" ]; then
   curl "${SENTRY_CRON_ENDPOINT}?status=ok"
