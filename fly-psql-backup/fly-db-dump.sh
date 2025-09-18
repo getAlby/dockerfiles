@@ -15,8 +15,22 @@ fi
 
 mkdir -p "$BACKUP_DIR"
 
+echo "Testing PostgreSQL connection..."
+if ! psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -c "SELECT 1;" > /dev/null 2>&1; then
+    echo "ERROR: Failed to connect to PostgreSQL at $PG_HOST:$PG_PORT with user $PG_USER" >&2
+    exit 1
+fi
+echo "PostgreSQL connection successful"
+
 dbs=$(psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -t -c \
     "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres', 'template0', 'template1') AND datname LIKE 'nwc%' ORDER BY datname;" | sed 's/^ *//' | sed '/^$/d')
+
+if [ -z "$dbs" ]; then
+    echo "ERROR: No databases found matching the criteria (datname LIKE 'nwc%')" >&2
+    exit 1
+fi
+
+echo "Found databases to backup: $(echo "$dbs" | tr '\n' ' ')"
 
 for db in $dbs; do
     outfile="${BACKUP_DIR}/${DATE_SUFFIX}.sql.gz"
