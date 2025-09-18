@@ -23,4 +23,4 @@ RUN wget -O /tmp/s5cmd.tar.gz https://github.com/peak/s5cmd/releases/download/v2
 ENV S3_ENDPOINT_URL=https://storage.googleapis.com
 ENV S3_BUCKET=nwcs-fly-psql-db
 
-ENTRYPOINT ["/bin/sh", "-c", "flyctl proxy 5432:5432 -a hub-db-fra & sleep 3 && /fly-db-dump.sh"]
+ENTRYPOINT ["/bin/sh", "-c", "flyctl proxy 5432:5432 -a hub-db-fra & sleep 10 && /fly-db-dump.sh"]
