@@ -32,7 +32,7 @@ export AWS_DEFAULT_REGION=$S3_REGION
 
 
 # AWS CLI command to list objects in the S3 bucket sorted by modification time
-latest_file=$(aws $AWS_ARGS s3api list-objects-v2 --bucket $S3_BUCKET --prefix $S3_PREFIX --query 'sort_by(Contents, &LastModified)[-1].Key' --output text)
+latest_file=$(aws $AWS_ARGS s3api list-objects-v2 --bucket $S3_BUCKET --prefix $S3_PREFIX --query 'sort_by(Contents[?ends_with(Key, `.in-progress`) == `false`], &LastModified)[-1].Key' --output text)
 
 echo $latest_file
 
