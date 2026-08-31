@@ -81,12 +81,19 @@ if [ "${POSTGRES_BACKUP_ALL}" == "true" ]; then
   echo "Uploading dump to $S3_BUCKET"
 
   BACKUP_URI="s3://${S3_BUCKET}${S3_PREFIX}all_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg"
+  IN_PROGRESS_URI="${BACKUP_URI}.in-progress"
   if ! pg_dumpall -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" \
       | gzip \
       | gpg -c --batch --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --output - \
-      | aws $AWS_ARGS s3 cp - "$BACKUP_URI"; then
+      | aws $AWS_ARGS s3 cp - "$IN_PROGRESS_URI"; then
     echo "SQL backup failed; removing any partial upload"
-    aws $AWS_ARGS s3 rm "$BACKUP_URI" || true
+    aws $AWS_ARGS s3 rm "$IN_PROGRESS_URI" || true
+    exit 2
+  fi
+
+  if ! aws $AWS_ARGS s3 mv "$IN_PROGRESS_URI" "$BACKUP_URI"; then
+    echo "SQL backup promotion failed; removing the in-progress upload"
+    aws $AWS_ARGS s3 rm "$IN_PROGRESS_URI" || true
     exit 2
   fi
 
@@ -102,12 +109,19 @@ else
     echo "Uploading dump to $S3_BUCKET"
 
     BACKUP_URI="s3://${S3_BUCKET}${S3_PREFIX}${DB}_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz.gpg"
+    IN_PROGRESS_URI="${BACKUP_URI}.in-progress"
     if ! pg_dump $POSTGRES_HOST_OPTS "$DB" \
         | gzip \
         | gpg -c --batch --pinentry-mode loopback --passphrase "$GPG_PASSWORD" --output - \
-        | aws $AWS_ARGS s3 cp - "$BACKUP_URI"; then
+        | aws $AWS_ARGS s3 cp - "$IN_PROGRESS_URI"; then
       echo "SQL backup failed; removing any partial upload"
-      aws $AWS_ARGS s3 rm "$BACKUP_URI" || true
+      aws $AWS_ARGS s3 rm "$IN_PROGRESS_URI" || true
+      exit 2
+    fi
+
+    if ! aws $AWS_ARGS s3 mv "$IN_PROGRESS_URI" "$BACKUP_URI"; then
+      echo "SQL backup promotion failed; removing the in-progress upload"
+      aws $AWS_ARGS s3 rm "$IN_PROGRESS_URI" || true
       exit 2
     fi
 
