@@ -15,11 +15,18 @@ fi
 
 mkdir -p "$BACKUP_DIR"
 
-echo "Testing PostgreSQL connection..."
-if ! psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -c "SELECT 1;" > /dev/null 2>&1; then
-    echo "ERROR: Failed to connect to PostgreSQL at $PG_HOST:$PG_PORT with user $PG_USER" >&2
-    exit 1
-fi
+PG_CONNECT_TIMEOUT="${PG_CONNECT_TIMEOUT:-120}"
+
+# flyctl proxy can take a while to establish the tunnel, so retry until it is up
+echo "Testing PostgreSQL connection (timeout ${PG_CONNECT_TIMEOUT}s)..."
+deadline=$((SECONDS + PG_CONNECT_TIMEOUT))
+until psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -c "SELECT 1;" > /dev/null 2>&1; do
+    if [ "$SECONDS" -ge "$deadline" ]; then
+        echo "ERROR: Failed to connect to PostgreSQL at $PG_HOST:$PG_PORT with user $PG_USER after ${PG_CONNECT_TIMEOUT}s" >&2
+        exit 1
+    fi
+    sleep 2
+done
 echo "PostgreSQL connection successful"
 
 dbs=$(psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d postgres -t -c \

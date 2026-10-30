@@ -33,6 +33,7 @@ This directory contains a simple yet powerful PostgreSQL backup script for use w
 | `PG_PORT`               | PostgreSQL port                                                  | `5432`          |
 | `PG_USER`               | PostgreSQL user                                                  | `postgres`      |
 | `PGPASSWORD` / `PG_PASSWORD` | PostgreSQL password (also used as GPG passphrase)           | (empty)         |
+| `PG_CONNECT_TIMEOUT`    | Seconds to wait for PostgreSQL (e.g. flyctl proxy) to come up     | `120`           |
 | `BACKUP_DIR`            | Local directory to store backups                                 | `./backups`     |
 | `S3_ACCESS_KEY_ID`      | S3 access key                                                    | (required)      |
 | `S3_SECRET_ACCESS_KEY`  | S3 secret key                                                    | (required)      |
